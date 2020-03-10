@@ -1,8 +1,8 @@
 package nameservice
 
 import (
-	"github.com/arjunandra/namservice-cosmos/x/nameservice/internal/keeper"
-	"github.com/arjunandra/namservice-cosmos/x/nameservice/internal/types"
+	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/keeper"
+	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
 )
 
 const (
@@ -11,9 +11,6 @@ const (
 	ModuleName        = types.ModuleName
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
-	DefaultParamspace = types.DefaultParamspace
-	QueryParams       = types.QueryParams
-	QuerierRoute      = types.QuerierRoute
 )
 
 var (
@@ -23,11 +20,8 @@ var (
 	NewMsgSetName 		= types.NewMsgSetName
 	NewMsgBuyName 		= types.NewMsgBuyName
 	NewMsgDeleteName 	= types.NewMsgDeleteName
-	newWhoIs			= types.newWhoIs
+	NewWhoIs			= types.NewWhoIs
 	RegisterCodec       = types.RegisterCodec
-	NewGenesisState     = types.NewGenesisState
-	DefaultGenesisState = types.DefaultGenesisState
-	ValidateGenesis     = types.ValidateGenesis
 	// TODO: Fill out function aliases
 
 	// variable aliases
@@ -36,12 +30,11 @@ var (
 
 type (
 	Keeper       	= keeper.Keeper
-	GenesisState 	= types.GenesisState
 	Params       	= types.Params
 	MsgSetName	 	= types.MsgSetName
 	MsgBuyName 	 	= types.MsgBuyName
 	MsgDeleteName	= types.MsgDeleteName
 	QueryResResolve = types.QueryResResolve
 	QueryResNames	= types.QueryResNames
-	whoIs			= types.whoIs
+	whoIs			= types.WhoIs
 )

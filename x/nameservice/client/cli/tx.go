@@ -30,9 +30,9 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	nameserviceTxCmd.AddCommand(flags.PostCommands(
 		// TODO: Add tx based commands
 		// GetCmd<Action>(cdc)
-		GetCmdBuyName(cdc)
-		GetCmdSetName(cdc)
-		GetCmdDeleteName(cdc)
+		GetCmdBuyName(cdc),
+		GetCmdSetName(cdc),
+		GetCmdDeleteName(cdc),
 	)...)
 
 	return nameserviceTxCmd

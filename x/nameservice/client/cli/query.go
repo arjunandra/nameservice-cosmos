@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
 )
@@ -29,9 +27,9 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	nameserviceQueryCmd.AddCommand(
 		flags.GetCommands(
 	// TODO: Add query Cmds
-			GetCmdGetName(storeKey, cdc),
-			GetCmdWhoIs(storeKey, cdc),
-			GetCmdNames(storeKey, cdc)
+			GetCmdGetName(queryRoute, cdc),
+			GetCmdWhoIs(queryRoute, cdc),
+			GetCmdNames(queryRoute, cdc),
 		)...,
 	)
 
@@ -55,7 +53,7 @@ func GetCmdGetName(queryRoute string, cdc *codec.Codec) *cobra.Command {
 				return nil
 			}
 
-			var output types.QuerResResolve
+			var output types.QueryResResolve
 			cdc.MustUnmarshalJSON(res, &output)
 			return cliCtx.PrintOutput(output)
 		},
@@ -64,8 +62,8 @@ func GetCmdGetName(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 func GetCmdWhoIs(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command {
-		Use: "whois [name]"
-		Short: "Query whois info of name"
+		Use: "whois [name]",
+		Short: "Query whois info of name",
 		Args: cobra.ExactArgs(1),
 		RunE: func (cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
@@ -78,7 +76,7 @@ func GetCmdWhoIs(queryRoute string, cdc *codec.Codec) *cobra.Command {
 				return nil
 			}
 
-			var output types.whoIs
+			var output types.WhoIs
 			cdc.MustUnmarshalJSON(res, &output)
 			return cliCtx.PrintOutput(output)
 		},
@@ -87,12 +85,11 @@ func GetCmdWhoIs(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 func GetCmdNames(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command {
-		Use: "names"
-		Short: "names"
+		Use: "names",
+		Short: "names",
 		Args: cobra.ExactArgs(1),
 		RunE: func (cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			name := args[0]
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/names", queryRoute), nil)
 		

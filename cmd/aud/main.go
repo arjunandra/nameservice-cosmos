@@ -13,8 +13,6 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/arjunandra/nameserviceCosmos/app"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -25,7 +23,7 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	app "github.com/arjunandra/nameservice-cosmos"
+	app "github.com/arjunandra/nameservice-cosmos/app"
 )
 
 const flagInvCheckPeriod = "inv-check-period"

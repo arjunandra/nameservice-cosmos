@@ -58,7 +58,7 @@ func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 
 // RegisterRESTRoutes registers the REST routes for the nameservice module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr)
+	rest.RegisterRoutes(ctx, rtr, StoreKey)
 }
 
 // GetTxCmd returns the root tx command for the nameservice module.
@@ -83,7 +83,7 @@ type AppModule struct {
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(k Keeper, /*TODO: Add Keepers that your application depends on*/) AppModule {
+func NewAppModule(k Keeper, /*TODO: Add Keepers that your application depends on*/ bankKeeper bank.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic:      AppModuleBasic{},
 		keeper:              k,
@@ -112,7 +112,7 @@ func (am AppModule) NewHandler() sdk.Handler {
 
 // QuerierRoute returns the nameservice module's querier route name.
 func (AppModule) QuerierRoute() string {
-	return QuerierRoute
+	return ModuleName
 }
 
 // NewQuerierHandler returns the nameservice module sdk.Querier.

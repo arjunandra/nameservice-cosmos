@@ -1,19 +1,23 @@
 package nameservice
 
 import (
+	"fmt"
+
+	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 type GenesisState struct {
-	whoIsRecords []whoIs `json:"whois_records"`
+	whoIsRecords []types.WhoIs `json:"whois_records"`
 }
 
-func NewGenesisState(whoIsRecords []whoIs) GenesisState {
+func NewGenesisState(whoIsRecords []types.WhoIs) GenesisState {
 	return GenesisState{whoIsRecords: whoIsRecords}
 }
 
-func validateGensis(genState GenesisState) error {
+func ValidateGenesis(genState GenesisState) error {
 
 	// Fetch & Iterate Through Names' whoIs
 	for _, whoIs := range genState.whoIsRecords {
@@ -36,19 +40,19 @@ func validateGensis(genState GenesisState) error {
 
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		whoIsRecords: []whoIs{},
+		whoIsRecords: []types.WhoIs{},
 	}
 }
 
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
-func InitGenesis(ctx sdk.Context, k Keeper, /* TODO: Define what keepers the module needs */, genState GenesisState) []abci.ValidatorUpdate {
+func InitGenesis(ctx sdk.Context, k Keeper, /* TODO: Define what keepers the module needs */ genState GenesisState) []abci.ValidatorUpdate {
 	// TODO: Define logic for when you would like to initalize a new genesis
 
 	// Fetch & Iterate Through Names' whoIs
 	for _, whoIs := range genState.whoIsRecords {
 		// Assign whoIs Structures
-		keeper.setWhoIs(ctx, whoIs.Value, whoIs)
+		k.SetWhoIs(ctx, whoIs.Value, whoIs)
 	}
 	return []abci.ValidatorUpdate{}
 }
@@ -58,10 +62,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, /* TODO: Define what keepers the mod
 // with InitGenesis
 func ExportGenesis(ctx sdk.Context, k Keeper) (GenesisState) {
 	// TODO: Define logic for exporting state
-	var names []whoIs
+	var names []types.WhoIs
 
 	// Retrieve All The Names
-	iterator := k.getNamesIterator(ctx)
+	iterator := k.GetNamesIterator(ctx)
 
 	for ; iterator.Valid(); iterator.Next() {
 
@@ -69,7 +73,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) (GenesisState) {
 		key := string(iterator.Key())
 
 		// Get whoIs Of Name
-		whois := k.getWhoIs(ctx, key)
+		whois := k.GetWhoIs(ctx, key)
 
 		// Append To Names List
 		names = append(names, whois)

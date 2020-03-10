@@ -1,15 +1,12 @@
 package keeper
 
 import (
-	"fmt"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/arjunandra/namservice-cosmos/x/nameservice/internal/types"
+	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
 )
 
 // Query End-Points
@@ -24,33 +21,33 @@ func NewQuerier(k Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
 		case QueryResolve:
-			return queryResolve(ctx, path[1:], req, keeper)
+			return queryResolve(ctx, path[1:], req, k)
 		case QueryWhoIs:
-			return queryWhoIs(ctx, path[1:], req, keeper)
+			return queryWhoIs(ctx, path[1:], req, k)
 		case QueryNames:
-			return queryNames(ctx, req, keeper)
+			return queryNames(ctx, req, k)
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown nameservice query endpoint")
 		}
 	}
 }
 
-func queryParams(ctx sdk.Context, k Keeper) ([]byte, error) {
-	params := k.GetParams(ctx)
+// func queryParams(ctx sdk.Context, k Keeper) ([]byte, error) {
+// 	params := k.GetParams(ctx)
 
-	res, err := codec.MarshalJSONIndent(types.ModuleCdc, params)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
+// 	res, err := codec.MarshalJSONIndent(types.ModuleCdc, params)
+// 	if err != nil {
+// 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+// 	}
 
-	return res, nil
-}
+// 	return res, nil
+// }
 
 // TODO: Add the modules query functions
 // They will be similar to the above one: queryParams()
 
 func queryResolve(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-	value := keeper.getName(ctx, path[0])
+	value := keeper.GetName(ctx, path[0])
 
 	if len(value) == 0 {
 		return []byte{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "Couldn't Resolve Name")
@@ -66,7 +63,7 @@ func queryResolve(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 }
 
 func queryWhoIs(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-	whois := keeper.getWhoIs(ctx, path[0])
+	whois := keeper.GetWhoIs(ctx, path[0])
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, whois)
 
@@ -80,16 +77,16 @@ func queryWhoIs(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Ke
 func queryNames(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var namesList types.QueryResNames
 
-	iterator := keeper.getNamesIterator(ctx)
+	iterator := keeper.GetNamesIterator(ctx)
 
 	for; iterator.Valid(); iterator.Next() {
-		namesList = append(namesList, string(iterator.Key())
+		namesList = append(namesList, string(iterator.Key()))
 	}
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, namesList)
 
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return res, nil

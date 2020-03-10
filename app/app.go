@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 
+	tmtypes "github.com/tendermint/tendermint/types"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -25,9 +27,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+
+	"github.com/arjunandra/nameservice-cosmos/x/nameservice"
 )
 
-const appName = "app"
+const appName = "nameservice"
 
 var (
 	// TODO: rename your cli
@@ -101,7 +105,9 @@ type NewApp struct {
 	distrKeeper    distr.Keeper
 	supplyKeeper   supply.Keeper
 	paramsKeeper   params.Keeper
+
 	// TODO: Add your module(s)
+	nsKeeper       nameservice.Keeper
 
 	// Module Manager
 	mm *module.Manager
@@ -111,7 +117,7 @@ type NewApp struct {
 }
 
 // verify app interface at compile time
-var _ simapp.App = (*NewApp)(nil)
+//var _ simapp.App = (*NewApp)(nil)
 
 // NewnameserviceCosmosApp is a constructor function for nameserviceCosmosApp
 func NewInitApp(
@@ -213,7 +219,7 @@ func NewInitApp(
 	app.nsKeeper = nameservice.NewKeeper(
 		app.bankKeeper,
 		keys[nameservice.StoreKey],
-		app.cdc
+		app.cdc,
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -328,7 +334,7 @@ func (app *NewApp) ModuleAccountAddrs() map[string]bool {
 
 // __________________________________________________________________
 
-func (app *nameServiceApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
+func (app *NewApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	
 		// as if they could withdraw from the start of the next block
 		ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
@@ -345,14 +351,14 @@ func (app *nameServiceApp) ExportAppStateAndValidators(forZeroHeight bool, jailW
 		return appState, validators, nil
 }
 
-// MakeCodec generates the necessary codecs for Amino
-func MakeCodec() *codec.Codec {
-	var cdc = codec.New()
-	ModuleBasics.RegisterCodec(cdc)
-	sdk.RegisterCodec(cdc)
-	codec.RegisterCrypto(cdc)
-	return cdc
-}
+// // MakeCodec generates the necessary codecs for Amino
+// func MakeCodec() *codec.Codec {
+// 	var cdc = codec.New()
+// 	ModuleBasics.RegisterCodec(cdc)
+// 	sdk.RegisterCodec(cdc)
+// 	codec.RegisterCrypto(cdc)
+// 	return cdc
+// }
 
 
 // Old Code 

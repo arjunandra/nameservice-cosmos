@@ -1,9 +1,13 @@
 package types
 
+import (
+	"fmt"
+)
+
 // GenesisState - all nameservice state that must be provided at genesis
 type GenesisState struct {
 	// TODO: Fill out what is needed by the module for genesis
-	whoIsRecords []whoIs	`json:"whois_records"`
+	whoIsRecords []WhoIs	`json:"whois_records"`
 }
 
 
@@ -12,7 +16,7 @@ func NewGenesisState( /* TODO: Fill out with what is needed for genesis state */
 	return GenesisState{
 		// TODO: Fill out according to your genesis state
 
-		return GenesisState{whoIsRecords: nil}
+		whoIsRecords: nil,
 	}
 }
 
@@ -21,12 +25,12 @@ func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		// TODO: Fill out according to your genesis state, these values will be initialized but empty
 	
-		whoIsRecords: []whoIs{},
+		whoIsRecords: []WhoIs{},
 	}
 }
 
 // ValidateGenesis validates the nameservice genesis parameters
-func validateGensis(genState GenesisState) error {
+func ValidateGenesis(genState GenesisState) error {
 
 	// Fetch & Iterate Through Names' whoIs
 	for _, whoIs := range genState.whoIsRecords {

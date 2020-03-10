@@ -1,10 +1,7 @@
 package rest
 
 import (
-	"bytes"
 	"net/http"
-
-	"github.com/gorilla/mux"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

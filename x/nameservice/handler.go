@@ -3,6 +3,8 @@ package nameservice
 import (
 	"fmt"
 
+	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -13,11 +15,11 @@ func NewHandler(k Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		case MsgSetName:
-			return handleMsgSetName(ctx, keeper, msg)
+			return handleMsgSetName(ctx, k, msg)
 		case MsgBuyName:
-			return handleMsgBuyName(ctx, keeper, msg)
+			return handleMsgBuyName(ctx, k, msg)
 		case MsgDeleteName:
-			return handleMsgDeleteName(ctx, keeper, msg)
+			return handleMsgDeleteName(ctx, k, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", ModuleName,  msg)
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
@@ -28,30 +30,30 @@ func NewHandler(k Keeper) sdk.Handler {
 // Handler Functions
 
 func handleMsgSetName(ctx sdk.Context, keeper Keeper, msg MsgSetName) (*sdk.Result, error){
-	if !msg.Owner.Equals(keeper.getOwner()) {
+	if !msg.Owner.Equals(keeper.GetOwner(ctx, msg.Name)) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Incorrect Owner")
 	}
 
-	keeper.setName(ctx, msg.Name, msg.Value) 
+	keeper.SetName(ctx, msg.Name, msg.Value) 
 	return &sdk.Result{}, nil
 }
 
 func handleMsgBuyName(ctx sdk.Context, keeper Keeper, msg MsgBuyName) (*sdk.Result, error) {
 
 	// Check If Current Price > Bid
-	if keeper.getPrice(ctx, msg.Name).isAllGT(msg.Bid) {
+	if keeper.GetPrice(ctx, msg.Name).IsAllGT(msg.Bid) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Bid Didn't Surpass Current Price")
 	}
 
-	if keeper.hasOwner(ctx, msg.Name) {
-		err := keeper.CoinKeeper.SendCoins(ctx, msg.Buyer, keeper.getOwner(ctx, msg.Name), msg.Bid)
+	if keeper.HasOwner(ctx, msg.Name) {
+		err := keeper.CoinKeeper.SendCoins(ctx, msg.Buyer, keeper.GetOwner(ctx, msg.Name), msg.Bid)
 		
 		// Error Occurred
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		err := keeper.CoinKeeper.SubtractCoins(ctx, msg.Buyer, msg.Bid)
+		_, err := keeper.CoinKeeper.SubtractCoins(ctx, msg.Buyer, msg.Bid)
 
 		// Error Occured
 		if err != nil {
@@ -59,21 +61,21 @@ func handleMsgBuyName(ctx sdk.Context, keeper Keeper, msg MsgBuyName) (*sdk.Resu
 		}
 	}
 
-	keeper.setOwner(ctx, msg.Name, msg.Buyer)
-	keeper.setPrice(ctx, msg.Name, msg.Bid)
+	keeper.SetOwner(ctx, msg.Name, msg.Buyer)
+	keeper.SetPrice(ctx, msg.Name, msg.Bid)
 	return &sdk.Result{}, nil
 }
 
-func handleMsgDeleteName(ctx sdk.Context, keeper Keeper) (*sdk.Result, error){
-	if !keeper.isNamePresent(ctx, msg.Name) {
+func handleMsgDeleteName(ctx sdk.Context, keeper Keeper, msg MsgDeleteName) (*sdk.Result, error){
+	if !keeper.IsNamePresent(ctx, msg.Name) {
 		return nil, sdkerrors.Wrap(types.ErrNameDoesNotExist, msg.Name)
 	}
 
-	if !msg.Owner.Equals(keeper.getOwner(ctx, msg.Name)) {
+	if !msg.Owner.Equals(keeper.GetOwner(ctx, msg.Name)) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Incorrect Owner")
 	}
 
-	keeper.deleteWhoIs(ctx, msg.Name)
+	keeper.DeleteWhoIs(ctx, msg.Name)
 	return &sdk.Result{}, nil
 }
 
