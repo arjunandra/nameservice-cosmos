@@ -34,12 +34,8 @@ import (
 const appName = "nameservice"
 
 var (
-	// TODO: rename your cli
-
 	// DefaultCLIHome default home directories for the application CLI
 	DefaultCLIHome = os.ExpandEnv("$HOME/.acli")
-
-	// TODO: rename your daemon
 
 	// DefaultNodeHome sets the folder where the applcation data and configuration will be stored
 	DefaultNodeHome = os.ExpandEnv("$HOME/.aud")
@@ -47,6 +43,7 @@ var (
 	// ModuleBasics The module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
+
 	ModuleBasics = module.NewBasicManager(
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
@@ -56,7 +53,8 @@ var (
 		params.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
-		// TODO: Add your module(s) AppModuleBasic
+		
+		// Added Modules
 
 		nameservice.AppModule{},
 	)
@@ -97,6 +95,12 @@ type NewApp struct {
 	// subspaces
 	subspaces map[string]params.Subspace
 
+	// Module Manager
+	mm *module.Manager
+
+	// simulation manager
+	sm *module.SimulationManager
+
 	// keepers
 	accountKeeper  auth.AccountKeeper
 	bankKeeper     bank.Keeper
@@ -106,18 +110,12 @@ type NewApp struct {
 	supplyKeeper   supply.Keeper
 	paramsKeeper   params.Keeper
 
-	// TODO: Add your module(s)
+	// Added Keeper 
 	nsKeeper       nameservice.Keeper
-
-	// Module Manager
-	mm *module.Manager
-
-	// simulation manager
-	sm *module.SimulationManager
 }
 
 // verify app interface at compile time
-//var _ simapp.App = (*NewApp)(nil)
+var _ simapp.App = (*NewApp)(nil)
 
 // NewnameserviceCosmosApp is a constructor function for nameserviceCosmosApp
 func NewInitApp(
@@ -214,7 +212,7 @@ func NewInitApp(
 			app.slashingKeeper.Hooks()),
 	)
 
-	// TODO: Add your module(s) keepers
+	// Initialize Added Keepers
 
 	app.nsKeeper = nameservice.NewKeeper(
 		app.bankKeeper,
@@ -231,10 +229,11 @@ func NewInitApp(
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
-		// TODO: Add your module(s)
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
 
+		// Added Module
+		nameservice.NewAppModule(app.nsKeeper, app.bankKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -247,16 +246,17 @@ func NewInitApp(
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
+		genaccounts.ModuleName,
 		distr.ModuleName,
 		staking.ModuleName,
 		auth.ModuleName,
 		bank.ModuleName,
 		slashing.ModuleName,
-		// TODO: Add your module(s)
-		supply.ModuleName,
-		genutil.ModuleName,
 
+		// Added Module
 		nameservice.ModuleName,
+
+		genutil.ModuleName,
 	)
 
 	// register all module routes and module queriers
@@ -300,7 +300,7 @@ func NewDefaultGenesisState() GenesisState {
 
 // InitChainer application update at chain initialization
 func (app *NewApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-	var genesisState simapp.GenesisState
+	var genesisState GenesisState
 
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
@@ -322,6 +322,16 @@ func (app *NewApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }
 
+// Codec returns the application's sealed codec.
+func (app *NewApp) Codec() *codec.Codec {
+	return app.cdc
+}
+
+// SimulationManager implements the SimulationApp interface
+func (app *NewApp) SimulationManager() *module.SimulationManager {
+	return app.sm
+}
+
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (app *NewApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
@@ -333,6 +343,8 @@ func (app *NewApp) ModuleAccountAddrs() map[string]bool {
 }
 
 // __________________________________________________________________
+
+// Helps Bootstrap The Initial State For The Application
 
 func (app *NewApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	
@@ -351,27 +363,6 @@ func (app *NewApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList
 		return appState, validators, nil
 }
 
-// // MakeCodec generates the necessary codecs for Amino
-// func MakeCodec() *codec.Codec {
-// 	var cdc = codec.New()
-// 	ModuleBasics.RegisterCodec(cdc)
-// 	sdk.RegisterCodec(cdc)
-// 	codec.RegisterCrypto(cdc)
-// 	return cdc
-// }
-
-
-// Old Code 
-
-// // Codec returns the application's sealed codec.
-// func (app *NewApp) Codec() *codec.Codec {
-// 	return app.cdc
-// }
-
-// // SimulationManager implements the SimulationApp interface
-// func (app *NewApp) SimulationManager() *module.SimulationManager {
-// 	return app.sm
-// }
 
 // // GetMaccPerms returns a mapping of the application's module account permissions.
 // func GetMaccPerms() map[string][]string {

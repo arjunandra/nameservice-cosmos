@@ -5,16 +5,17 @@ import (
 	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
 )
 
-const (
-	// TODO: define constants that you would like exposed from the internal package
+// Constants Exposed From Internal Package
 
+const (
 	ModuleName        = types.ModuleName
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
 )
 
+// Functions Aliases
+
 var (
-	// functions aliases
 	NewKeeper           = keeper.NewKeeper
 	NewQuerier          = keeper.NewQuerier
 	NewMsgSetName 		= types.NewMsgSetName
@@ -22,11 +23,15 @@ var (
 	NewMsgDeleteName 	= types.NewMsgDeleteName
 	NewWhoIs			= types.NewWhoIs
 	RegisterCodec       = types.RegisterCodec
-	// TODO: Fill out function aliases
+)
 
-	// variable aliases
+// Variable Aliases
+
+var (
 	ModuleCdc     = types.ModuleCdc
 )
+
+// Required Structures 
 
 type (
 	Keeper       	= keeper.Keeper

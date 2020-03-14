@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgSetName
+// Structure Declarations
 
 type MsgSetName struct {
 	Name string				`json:"name"`
@@ -13,7 +13,19 @@ type MsgSetName struct {
 	Owner sdk.AccAddress	`json:"owner"`	
 }
 
-// Constructor for MsgSetName
+type MsgBuyName struct {
+	Name string				`json:"name"`
+	Bid sdk.Coins			`json:"bid"`
+	Buyer sdk.AccAddress	`json:"buyer"`
+}
+
+type MsgDeleteName struct {
+	Name string				`json:"name"`
+	Owner sdk.AccAddress	`json:"owner"`
+}
+
+// Message Constructors
+
 func NewMsgSetName(name string, value string, owner sdk.AccAddress) MsgSetName {
 	return MsgSetName {
 		Name: name,
@@ -22,11 +34,35 @@ func NewMsgSetName(name string, value string, owner sdk.AccAddress) MsgSetName {
 	}
 }
 
+func NewMsgBuyName(name string, bid sdk.Coins, buyer sdk.AccAddress) MsgBuyName {
+	return MsgBuyName {
+		Name: name,
+		Bid: bid,
+		Buyer: buyer,
+	}
+}
+
+func NewMsgDeleteName(name string, owner sdk.AccAddress) MsgDeleteName {
+	return MsgDeleteName {
+		Name: name,
+		Owner: owner,
+	}
+}
+
+// Message Route Declarations
+
 func (msg MsgSetName) Route() string { return RouterKey }
+func (msg MsgBuyName) Route() string { return RouterKey }
+func (msg MsgDeleteName) Route() string { return RouterKey }
+
+// Message Type Declarations
 
 func (msg MsgSetName) Type() string { return "set_name" }
+func (msg MsgBuyName) Type() string {return "buy_name"}
+func (msg MsgDeleteName) Type() string { return "delete_name" }
 
 // Stateless Checks
+
 func (msg MsgSetName) ValidateBasic() error {
 	if msg.Owner.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, msg.Owner.String())
@@ -38,35 +74,6 @@ func (msg MsgSetName) ValidateBasic() error {
 
 	return nil
 }
-
-func (msg MsgSetName) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
-}
-
-func (msg MsgSetName) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Owner}
-}
-
-// MsgBuyName
-
-type MsgBuyName struct {
-	Name string				`json:"name"`
-	Bid sdk.Coins			`json:"bid"`
-	Buyer sdk.AccAddress	`json:"buyer"`
-}
-
-// Constructor For MsgBuyName
-
-func NewMsgBuyName(name string, bid sdk.Coins, buyer sdk.AccAddress) MsgBuyName {
-	return MsgBuyName {
-		Name: name,
-		Bid: bid,
-		Buyer: buyer,
-	}
-}
-
-func (msg MsgBuyName) Route() string { return RouterKey }
-func (msg MsgBuyName) Type() string {return "buy_name"}
 
 func (msg MsgBuyName) ValidateBasic() error {
 	if msg.Buyer.Empty() {
@@ -84,33 +91,6 @@ func (msg MsgBuyName) ValidateBasic() error {
 	return nil
 }
 
-func (msg MsgBuyName) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
-}
-
-func (msg MsgBuyName) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Buyer}
-}
-
-// MsgDeleteName
-
-type MsgDeleteName struct {
-	Name string				`json:"name"`
-	Owner sdk.AccAddress	`json:"owner"`
-}
-
-// Constructor for MsgDeleteName
-
-func NewMsgDeleteName(name string, owner sdk.AccAddress) MsgDeleteName {
-	return MsgDeleteName {
-		Name: name,
-		Owner: owner,
-	}
-}
-
-func (msg MsgDeleteName) Route() string { return RouterKey }
-func (msg MsgDeleteName) Type() string { return "delete_name" }
-
 func (msg MsgDeleteName) ValidateBasic() error {
 	if msg.Owner.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
@@ -123,8 +103,28 @@ func (msg MsgDeleteName) ValidateBasic() error {
 	return nil
 }
 
+// Message Sign Bytes Getter
+
+func (msg MsgSetName) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+func (msg MsgBuyName) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
 func (msg MsgDeleteName) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg)) 
+}
+
+// Message Signers Getter
+
+func (msg MsgSetName) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Owner}
+}
+
+func (msg MsgBuyName) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Buyer}
 }
 
 func (msg MsgDeleteName) GetSigners() []sdk.AccAddress {

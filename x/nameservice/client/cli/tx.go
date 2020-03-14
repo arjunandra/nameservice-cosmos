@@ -28,8 +28,9 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	nameserviceTxCmd.AddCommand(flags.PostCommands(
-		// TODO: Add tx based commands
-		// GetCmd<Action>(cdc)
+
+		// Added Transaction Commands
+
 		GetCmdBuyName(cdc),
 		GetCmdSetName(cdc),
 		GetCmdDeleteName(cdc),
@@ -38,32 +39,8 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	return nameserviceTxCmd
 }
 
-// Example:
-//
-// GetCmd<Action> is the CLI command for doing <Action>
-// func GetCmd<Action>(cdc *codec.Codec) *cobra.Command {
-// 	return &cobra.Command{
-// 		Use:   "/* Describe your action cmd */",
-// 		Short: "/* Provide a short description on the cmd */",
-// 		Args:  cobra.ExactArgs(2), // Does your request require arguments
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-// 			inBuf := bufio.NewReader(cmd.InOrStdin())
-// 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+// Define cobra.Commands For Each Module's Added Transaction Command
 
-// 			msg := types.NewMsg<Action>(/* Action params */)
-// 			err = msg.ValidateBasic()
-// 			if err != nil {
-// 				return err
-// 			}
-
-// 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-// 		},
-// 	}
-// }
-
-
-// CLI Command For Sending A BuyName Transaction
 func GetCmdBuyName(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "buy-name [name] [amount]",
@@ -93,7 +70,6 @@ func GetCmdBuyName(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// CLI Command For Sending A SetName Transaction
 func GetCmdSetName(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set-name [name] [value]",
@@ -122,7 +98,6 @@ func GetCmdSetName(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// CLI command for sending a DeleteName transaction
 func GetCmdDeleteName(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "delete-name [name]",

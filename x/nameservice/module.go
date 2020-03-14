@@ -78,7 +78,9 @@ type AppModule struct {
 	AppModuleBasic
 
 	keeper        Keeper
-	// TODO: Add keepers that your application depends on
+	
+	// Added Keepers
+	
 	bankKeeper bank.Keeper
 }
 
@@ -87,7 +89,9 @@ func NewAppModule(k Keeper, /*TODO: Add Keepers that your application depends on
 	return AppModule{
 		AppModuleBasic:      AppModuleBasic{},
 		keeper:              k,
-		// TODO: Add keepers that your application depends on
+		
+		// Added Keepers
+
 		bankKeeper: bankKeeper,
 	}
 }

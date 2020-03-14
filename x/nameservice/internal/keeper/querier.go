@@ -16,7 +16,8 @@ const (
 	QueryNames = "names"
 )
 
-// NewQuerier creates a new querier for nameservice clients.
+// NewQuerier creates a new querier for naeservice clients
+
 func NewQuerier(k Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
@@ -32,19 +33,7 @@ func NewQuerier(k Keeper) sdk.Querier {
 	}
 }
 
-// func queryParams(ctx sdk.Context, k Keeper) ([]byte, error) {
-// 	params := k.GetParams(ctx)
-
-// 	res, err := codec.MarshalJSONIndent(types.ModuleCdc, params)
-// 	if err != nil {
-// 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-// 	}
-
-// 	return res, nil
-// }
-
-// TODO: Add the modules query functions
-// They will be similar to the above one: queryParams()
+// Defining Input Parameters & Responses For Each Query
 
 func queryResolve(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	value := keeper.GetName(ctx, path[0])

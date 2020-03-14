@@ -13,8 +13,18 @@ type GenesisState struct {
 	whoIsRecords []types.WhoIs `json:"whois_records"`
 }
 
+// Constructor 
+
 func NewGenesisState(whoIsRecords []types.WhoIs) GenesisState {
 	return GenesisState{whoIsRecords: whoIsRecords}
+}
+
+// Default 
+
+func DefaultGenesisState() GenesisState {
+	return GenesisState{
+		whoIsRecords: []types.WhoIs{},
+	}
 }
 
 func ValidateGenesis(genState GenesisState) error {
@@ -38,18 +48,14 @@ func ValidateGenesis(genState GenesisState) error {
 	return nil
 }
 
-func DefaultGenesisState() GenesisState {
-	return GenesisState{
-		whoIsRecords: []types.WhoIs{},
-	}
-}
 
 // InitGenesis initialize default parameters
 // and the keeper's address to pubkey map
-func InitGenesis(ctx sdk.Context, k Keeper, /* TODO: Define what keepers the module needs */ genState GenesisState) []abci.ValidatorUpdate {
-	// TODO: Define logic for when you would like to initalize a new genesis
 
+func InitGenesis(ctx sdk.Context, k Keeper, /* TODO: Define what keepers the module needs */ genState GenesisState) []abci.ValidatorUpdate {
+	
 	// Fetch & Iterate Through Names' whoIs
+
 	for _, whoIs := range genState.whoIsRecords {
 		// Assign whoIs Structures
 		k.SetWhoIs(ctx, whoIs.Value, whoIs)
@@ -60,8 +66,9 @@ func InitGenesis(ctx sdk.Context, k Keeper, /* TODO: Define what keepers the mod
 // ExportGenesis writes the current store values
 // to a genesis file, which can be imported again
 // with InitGenesis
+
 func ExportGenesis(ctx sdk.Context, k Keeper) (GenesisState) {
-	// TODO: Define logic for exporting state
+	
 	var names []types.WhoIs
 
 	// Retrieve All The Names

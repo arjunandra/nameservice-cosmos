@@ -10,36 +10,7 @@ import (
 	"github.com/arjunandra/nameservice-cosmos/x/nameservice/internal/types"
 )
 
-// func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-// 	// r.HandleFunc(
-// 	// TODO: Define the Rest route ,
-// 	// Call the function which should be executed for this route),
-// 	// ).Methods("POST")
-// }
-
-/*
-// Action TX body
-type <Action>Req struct {
-	BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
-	// TODO: Define more types if needed
-}
-
-func <Action>RequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req <Action>Req
-		vars := mux.Vars(r)
-
-		baseReq := req.BaseReq.Sanitize()
-		if !baseReq.ValidateBasic(w) {
-			return
-		}
-
-		// TODO: Define the module tx logic for this action
-
-		utils.WriteGenerateStdTxResponse(w, cliCtx, BaseReq, []sdk.Msg{msg})
-	}
-}
-*/
+// Declaring Request Structures For Transaction Commands (From /client/cli/tx.go)
 
 type buyNameReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
@@ -47,6 +18,21 @@ type buyNameReq struct {
 	Amount  string       `json:"amount"`
 	Buyer   string       `json:"buyer"`
 }
+
+type setNameReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	Name    string       `json:"name"`
+	Value   string       `json:"value"`
+	Owner   string       `json:"owner"`
+}
+
+type deleteNameReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	Name    string       `json:"name"`
+	Owner   string       `json:"owner"`
+}
+
+// Defining Handlers For Transaction Commands (From /client/cli/tx.go)
 
 func buyNameHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -93,13 +79,6 @@ func buyNameHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-type setNameReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	Name    string       `json:"name"`
-	Value   string       `json:"value"`
-	Owner   string       `json:"owner"`
-}
-
 func setNameHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req setNameReq
@@ -131,12 +110,6 @@ func setNameHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		// Generate Response
 		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
 	}
-}
-
-type deleteNameReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	Name    string       `json:"name"`
-	Owner   string       `json:"owner"`
 }
 
 func deleteNameHandler(cliCtx context.CLIContext) http.HandlerFunc {

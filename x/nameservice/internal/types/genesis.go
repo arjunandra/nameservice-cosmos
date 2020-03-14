@@ -6,7 +6,6 @@ import (
 
 // GenesisState - all nameservice state that must be provided at genesis
 type GenesisState struct {
-	// TODO: Fill out what is needed by the module for genesis
 	whoIsRecords []WhoIs	`json:"whois_records"`
 }
 
@@ -14,8 +13,6 @@ type GenesisState struct {
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState( /* TODO: Fill out with what is needed for genesis state */) GenesisState {
 	return GenesisState{
-		// TODO: Fill out according to your genesis state
-
 		whoIsRecords: nil,
 	}
 }
@@ -23,8 +20,6 @@ func NewGenesisState( /* TODO: Fill out with what is needed for genesis state */
 // DefaultGenesisState - default GenesisState used by Cosmos Hub
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		// TODO: Fill out according to your genesis state, these values will be initialized but empty
-	
 		whoIsRecords: []WhoIs{},
 	}
 }

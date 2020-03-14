@@ -26,7 +26,9 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 	nameserviceQueryCmd.AddCommand(
 		flags.GetCommands(
-	// TODO: Add query Cmds
+			
+			// Added Query Commands
+
 			GetCmdGetName(queryRoute, cdc),
 			GetCmdWhoIs(queryRoute, cdc),
 			GetCmdNames(queryRoute, cdc),
@@ -36,7 +38,8 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return nameserviceQueryCmd
 }
 
-// TODO: Add Query Commands
+// Define cobra.Commands For Each Module's Added Querier Command
+
 func GetCmdGetName(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command {
 		Use: "get [name]",

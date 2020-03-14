@@ -16,13 +16,14 @@ type WhoIs struct {
 	Price sdk.Coins			`json:"price"`
 }
 
+// whoIs Constructor
 func NewWhoIs() WhoIs {
 	return WhoIs {
 		Price: minNamePrice,
 	}
 }
 
-// Display whoIs
+// whoIs Print Function
 func (w WhoIs) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`Owner: %s\n Value: %s\n Price: %s`, w.Owner, w.Value, w.Price))
 }
